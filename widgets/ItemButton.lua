@@ -92,8 +92,8 @@ function buttonProto:OnCreate()
 	end
 	self:RegisterForDrag("LeftButton")
 	self:RegisterForClicks("LeftButtonUp","RightButtonUp")
-	self:SetScript('OnShow', self.OnShow)
-	self:SetScript('OnHide', self.OnHide)
+	self:SetScript('OnShow', self.ShowEvent)
+	self:SetScript('OnHide', self.HideEvent)
 	self:SetWidth(ITEM_SIZE)
 	self:SetHeight(ITEM_SIZE)
 	self.EmptySlotTextureFile = addon.EMPTY_SLOT_FILE
@@ -193,7 +193,7 @@ end
 -- because buttons created in combat do not work well
 hooksecurefunc(addon, 'OnInitialize', function()
 	addon:Debug('Prespawning buttons')
-	containerButtonPool:PreSpawn(160)
+	containerButtonPool:PreSpawn(200)
 end)
 
 --------------------------------------------------------------------------------
@@ -266,7 +266,7 @@ end
 -- Scripts & event handlers
 --------------------------------------------------------------------------------
 
-function buttonProto:OnShow()
+function buttonProto:ShowEvent()
 	self:RegisterEvent('BAG_UPDATE_COOLDOWN', 'UpdateCooldownCallback')
 	self:RegisterEvent('ITEM_LOCK_CHANGED', 'UpdateLock')
 	self:RegisterEvent('QUEST_ACCEPTED', 'UpdateBorder')
@@ -281,7 +281,7 @@ function buttonProto:OnShow()
 	self:Update()
 end
 
-function buttonProto:OnHide()
+function buttonProto:HideEvent()
 	self:UnregisterAllEvents()
 	self:UnregisterAllMessages()
 	if self.hasStackSplit and self.hasStackSplit == 1 then
@@ -294,6 +294,11 @@ function buttonProto:UNIT_QUEST_LOG_CHANGED(event, unit)
 		self:UpdateBorder(event)
 		self:UpdateAlpha()
 	end
+end
+
+function buttonProto:ENCHANT_SPELL_COMPLETED(...)
+	if not self:CanUpdate() then return end
+	self:FullUpdate()
 end
 
 --------------------------------------------------------------------------------

@@ -97,7 +97,7 @@ end
 function mod:ADDON_LOADED(_, name)
 	if name ~= 'Blizzard_TokenUI' then return end
 	self:UnregisterEvent('ADDON_LOADED')
-	hooksecurefunc('TokenFrame_Update', function() self:Update() end)
+	hooksecurefunc(TokenFrameMixin,'Update', function() self:Update() end)
 	self.hooked = true
 end
 
